@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ambrose Onyok - CV Login</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Poppins", Arial, sans-serif; background-image: url(cityscape.jpg); background-size: cover; background-position: center; color: #333; line-height: 1.6; }
+
+/* AUTH BLOCK */
+#auth-block { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(44,62,80,0.95); display:flex; justify-content:center; align-items:center; z-index:2000; }
+.auth-box { background:#fff; padding:30px; border-radius:12px; box-shadow:0 6px 15px rgba(0,0,0,0.3); text-align:center; width:90%; max-width:400px; }
+.auth-box h2 { margin-bottom:15px; color:#2c3e50; font-size:1.4rem; }
+.auth-box input { width:90%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:6px; font-size:1rem; }
+.password-container { position: relative; width: 90%; margin:auto; }
+.password-container input { width:100%; padding-right:40px; }
+.toggle-password { position:absolute; top:50%; right:10px; transform:translateY(-50%); cursor:pointer; font-size:1.2rem; color:#2c3e50; user-select:none; }
+.auth-box button { width:90%; padding:10px; background:#2c3e50; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:1rem; }
+.auth-box button:hover { background:#1abc9c; }
+.auth-box p { font-size:0.9rem; margin-top:10px; color:#555; cursor:pointer; }
+.auth-box p:hover { text-decoration: underline; }
+.remember-me { font-size:0.9rem; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:5px; color:#333; }
+
+/* CV CONTENT */
+.sticky-header { position: sticky; top:0; width:100%; background:#2c3e50; color:white; text-align:center; padding:15px 10px; font-size:1.2rem; font-weight:bold; z-index:1000; box-shadow:0 4px 6px rgba(0,0,0,0.2);}
+.sticky-header span { font-size:0.9rem; display:block; font-weight:normal; color:#ddd; }
+.container { display:flex; max-width:1200px; margin:20px auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+.left { flex:1; background:#2c3e50; color:white; padding:30px 20px; display:flex; flex-direction:column; gap:25px; align-items:center; }
+.profile-photo { width:150px; height:150px; border-radius:50%; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.3); background:#eee; }
+.profile-photo img { width:100%; height:100%; object-fit:cover; }
+.section { width:100%; background:#34495e; padding:15px; border-radius:10px; transition:transform 0.3s ease; }
+.section:hover { transform:translateY(-5px); }
+.section h3 { margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:5px; font-size:1rem; text-transform:uppercase; }
+.section p, .section li { font-size:0.9rem; color:#ecf0f1; }
+.section ul { padding-left:20px; }
+.right { flex:2; padding:30px 20px; display:flex; flex-direction:column; gap:20px; }
+.info-box { background:#f8f9fa; border-left:5px solid #2c3e50; padding:15px 20px; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.05); cursor:pointer; transition:all 0.3s ease; }
+.info-box h2 { font-size:1.2rem; color:#2c3e50; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+.info-box .content { display:none; font-size:1rem; }
+.info-box.show .content { display:block; }
+.logout-btn { margin-top:10px; padding:8px 16px; background:#c0392b; color:white; border:none; border-radius:6px; cursor:pointer; font-size:1rem; }
+.logout-btn:hover { background:#e74c3c; }
+.admin-banner { background:#1abc9c; color:white; padding:10px; text-align:center; border-radius:8px; margin-bottom:10px; font-size:1rem; }
+.accounts-list ul { list-style:none; padding-left:0; max-height:150px; overflow-y:auto; }
+.accounts-list li { padding:6px 0; display:flex; justify-content:space-between; align-items:center; font-size:0.95rem; }
+.delete-btn { background:#e74c3c; color:white; border:none; border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.9rem; }
+.delete-btn:hover { background:#c0392b; }
+
+/* RESPONSIVE */
+@media(max-width:900px){.container{flex-direction:column;}.left{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:20px;}.section{width:45%;margin-bottom:15px;}.right{padding:20px;}.accounts-list ul{max-height:120px;}}
+@media(max-width:600px){.section{width:100%;}.profile-photo{width:120px;height:120px;}.sticky-header{font-size:1rem;padding:10px;}.sticky-header span{font-size:0.8rem;}.auth-box{padding:20px;width:90%;}.auth-box input,.auth-box button{font-size:0.9rem;}}
+</style>
+</head>
+<body>
+
+<!-- AUTH BLOCK -->
+<div id="auth-block">
+<div class="auth-box">
+<h2 id="form-title">Sign Up to View CV</h2>
+<input type="text" id="username" placeholder="Enter Username">
+<div class="password-container">
+<input type="password" id="password" placeholder="Enter Password">
+<span class="toggle-password" onclick="togglePassword()">👁</span>
+</div>
+<div class="remember-me" id="remember-container" style="display:none;">
+<input type="checkbox" id="rememberMe"> <label for="rememberMe">Remember Me</label>
+</div>
+<button id="auth-btn" onclick="handleAuth()">Sign Up</button>
+<p id="toggle-text"></p>
+<p id="forgot-text" onclick="showForgot()">Forgot Password?</p>
+</div>
+</div>
+
+<!-- CV CONTENT -->
+<div id="main-content" style="display:none;">
+<div class="sticky-header">
+AMBROSE ONYOK
+<span>Registered IT Student</span>
+</div>
+
+<div class="container">
+<div class="left">
+<div class="profile-photo">
+<img src="ambrose.jpg" alt="Profile photo of Ambrose Onyok">
+</div>
+
+<div class="section">
+<h3>Contact</h3>
+<p>Email: <a href="mailto:2501202162@muni.ac.ug">2501202162@muni.ac.ug</a></p>
+<p>Phone: <a href="tel:+256760542556">+256-760-542-556</a></p>
+<p>Lira, Uganda</p>
+</div>
+
+<div class="section">
+<h3>Communication Skills</h3>
+<ul>
+<li>Public Speaking educating public on the importance and benefits of IT in the world.</li>
+<li>Report Writing on research methodology.</li>
+<li>Team Collaboration to gain experience in IT related fields.</li>
+</ul>
+</div>
+
+<div class="section">
+<h3>Leadership Skills</h3>
+<ul>
+<li>Managing a team of experienced experts in research & technological advancement.</li>
+<li>Decision making and career guidance counseling to the youth in IT events.</li>
+<li>Problem Solving using IT in real time situations.</li>
+</ul>
+</div>
+</div>
+
+<div class="right">
+<div id="admin-banner" class="admin-banner" style="display:none;"></div>
+<div id="accounts-list" class="accounts-list" style="display:none;"></div>
+
+<div class="info-box">
+<h2>Education Background <span>+</span></h2>
+<div class="content">
+<p>Bachelor of Information Technology – Muni University</p>
+<p>UACE – Lira Town College (2022)</p>
+<p>UCE – Lango College (2020)</p>
+</div>
+</div>
+
+<div class="info-box">
+<h2>Experience <span>+</span></h2>
+<div class="content">
+<p>Internship at XYZ Tech Solutions – Assisted in network setup and troubleshooting.</p>
+<p>Volunteered in school ICT club – trained peers in basic computer applications.</p>
+</div>
+</div>
+
+<div class="info-box">
+<h2>References <span>+</span></h2>
+<div class="content">
+<p>Mr. Acon Jaspher – Manager, Technology Crew UG (aconjaspher@gmail.com)</p>
+<p>Ms. Auma Betty – IT Manager, XYZ Tech Solutions (bettyauma@gmail.com)</p>
+<p>Mr. Ocan Maram – Investment official, Rax technology (ocanmaram@gmail.com)</p>
+</div>
+</div>
+
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+</div>
+</div>
+
+<script>
+// CREATE ADMIN ACCOUNT ALWAYS
+let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+const adminIndex = accounts.findIndex(a=>a.username==='admin');
+if(adminIndex===-1){
+  accounts.push({username:'admin', password:'admin123', isAdmin:true});
+  localStorage.setItem("accounts", JSON.stringify(accounts));
+} else {
+  accounts[adminIndex].isAdmin = true;
+  localStorage.setItem("accounts", JSON.stringify(accounts));
+}
+
+// AUTH FUNCTIONS
+const authBlock = document.getElementById("auth-block");
+const mainContent = document.getElementById("main-content");
+const formTitle = document.getElementById("form-title");
+const authBtn = document.getElementById("auth-btn");
+const toggleText = document.getElementById("toggle-text");
+const forgotText = document.getElementById("forgot-text");
+const rememberContainer = document.getElementById("remember-container");
+
+let rememberedUser = localStorage.getItem("rememberUser");
+if(rememberedUser){
+  const account = accounts.find(a=>a.username===rememberedUser);
+  if(account) login(account.username, account.password, true);
+} else if(accounts.length>1){
+  formTitle.textContent="Login to View CV";
+  authBtn.textContent="Login";
+  toggleText.textContent="Don’t have an account? Sign up with a new username.";
+  rememberContainer.style.display="flex";
+}
+
+function handleAuth(){
+  const user=document.getElementById("username").value.trim();
+  const pass=document.getElementById("password").value.trim();
+  const remember=document.getElementById("rememberMe").checked;
+  if(!user || !pass){ alert("Fill both fields!"); return; }
+  if(authBtn.textContent==="Login"){
+    const account = accounts.find(a=>a.username===user && a.password===pass);
+    if(!account){ alert("Invalid username/password!"); return; }
+    login(account.username, account.password, remember);
+  } else {
+    if(accounts.some(a=>a.username===user)){ alert("Username exists!"); return; }
+    accounts.push({username:user, password:pass, isAdmin:false});
+    localStorage.setItem("accounts", JSON.stringify(accounts));
+    alert("Sign-up successful! Now login."); location.reload();
+  }
+}
+
+function login(user, pass, remember){
+  if(remember) localStorage.setItem("rememberUser", user);
+  authBlock.style.display="none"; mainContent.style.display="block";
+  const account = accounts.find(a=>a.username===user);
+  if(account.isAdmin){
+    document.getElementById("admin-banner").textContent="Welcome Admin! Manage user accounts below:";
+    document.getElementById("admin-banner").style.display="block";
+    const listDiv=document.getElementById("accounts-list");
+    listDiv.innerHTML="<ul>"+accounts.map(a=>{
+      if(a.username==="admin") return `<li>${a.username} (Admin)</li>`;
+      return `<li>${a.username} (User) <button class='delete-btn' onclick='deleteUser(\"${a.username}\")'>Delete</button></li>`;
+    }).join("")+"</ul>";
+    listDiv.style.display="block";
+  }
+}
+
+function deleteUser(username){
+  if(confirm(`Delete user "${username}"?`)){
+    accounts = accounts.filter(a=>a.username!==username);
+    localStorage.setItem("accounts", JSON.stringify(accounts));
+    location.reload();
+  }
+}
+
+function logout(){ localStorage.removeItem("rememberUser"); location.reload(); }
+function togglePassword(){ const passInput=document.getElementById("password"); const toggle=document.querySelector(".toggle-password"); if(passInput.type==="password"){ passInput.type="text"; toggle.textContent="🙈"; } else{ passInput.type="password"; toggle.textContent="👁"; } }
+function showForgot(){ let user=document.getElementById("username").value.trim(); let account=accounts.find(a=>a.username===user); if(!account){ alert("Username not found."); return; } let newPass=prompt("Enter new password for "+user); if(newPass){ account.password=newPass; localStorage.setItem("accounts", JSON.stringify(accounts)); alert("Password reset successful."); location.reload(); } }
+
+// COLLAPSIBLE BOXES
+const infoBoxes = document.querySelectorAll('.info-box');
+infoBoxes.forEach(box=>{
+  const header=box.querySelector('h2');
+  header.addEventListener('click', ()=>{
+    box.classList.toggle('show');
+    const span = header.querySelector('span');
+    span.textContent = box.classList.contains('show') ? '−' : '+';
+  });
+});
+</script>
+</body>
+</html>
